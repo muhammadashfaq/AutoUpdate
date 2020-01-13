@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 //               .setUpdateJSON("http://techndevs.us/clients/ashfaq/AutoUpdater/update_changelog_json.js")
 
 
+
 //                <---------------------From GITHUB------------------->
                 new AppUpdater(MainActivity.this).
                         setUpdateFrom(UpdateFrom.GITHUB).
