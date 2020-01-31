@@ -23,32 +23,35 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         btnAutoUpdate = findViewById(R.id.btn_auto_update);
-
-
         btnAutoUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                //<---------------------From SERVER JSON------------------->
+                Toast.makeText(MainActivity.this, "Checking for Updates, Plz wait.", Toast.LENGTH_SHORT).show();
+                //<--------------------- From SERVER JSON ------------------->
 
-//                new AppUpdater(MainActivity.this)
-//               .setUpdateFrom(UpdateFrom.JSON).showEvery(5)
-//               .setUpdateJSON("http://techndevs.us/clients/ashfaq/AutoUpdater/update_changelog_json.js")
+//                Upload an JSON File which contains the 4 basic things,
+//                1.  latestVersion
+//                2.  latestVersionCode
+//                3.  URL(of apk) ==> http://techndevs.us/clients/ashfaq/AutoUpdater/AppUpdater.apk
+//                4.  releaseNotes ==> Which will show on dialog
 
+                new AppUpdater(MainActivity.this)
+                        .setUpdateFrom(UpdateFrom.JSON).showEvery(2)
+                        .setUpdateJSON("http://techndevs.us/clients/ashfaq/AutoUpdater/update_changelog_json.js")
+                        .showAppUpdated(true)
+                        .setCancelable(false)
+                        .start();
 
-
-//                <---------------------From GITHUB------------------->
-                new AppUpdater(MainActivity.this).
-                        setUpdateFrom(UpdateFrom.GITHUB).
-                        showAppUpdated(true)
-                        .setGitHubUserAndRepo("muhammadashfaq", "AutoUpdate").
-                        start();
+//                <--------------------- From GITHUB ------------------->
+//                new AppUpdater(MainActivity.this).
+//                        setUpdateFrom(UpdateFrom.GITHUB).
+//                        showAppUpdated(true)
+//                        .setGitHubUserAndRepo("muhammadashfaq", "AutoUpdate").
+//                        start();
             }
         });
-
-
     }
 
     @Override
