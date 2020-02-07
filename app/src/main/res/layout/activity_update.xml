@@ -1,31 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical">
+    tools:context=".UpdateActivity">
 
     <TextView
         android:id="@+id/heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="AutoUpdateChecker"
+        android:text="Auto Update Checker"
         android:textAlignment="center"
         android:textColor="@android:color/holo_orange_dark"
-        android:textSize="30sp"
+        android:textSize="26sp"
         android:textStyle="bold"
         tools:ignore="HardcodedText" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="(Version 1.0)"
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimary"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        tools:ignore="HardcodedText" />
-
 </LinearLayout>

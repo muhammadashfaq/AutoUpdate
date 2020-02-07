@@ -1,61 +1,40 @@
 package com.techndevs.autoupdate;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.github.javiersantos.appupdater.AppUpdater;
-import com.github.javiersantos.appupdater.AppUpdaterUtils;
-import com.github.javiersantos.appupdater.enums.AppUpdaterError;
-import com.github.javiersantos.appupdater.enums.Duration;
-import com.github.javiersantos.appupdater.enums.UpdateFrom;
-import com.github.javiersantos.appupdater.objects.Update;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnAutoUpdate;
+    private static final int REQUEST_WRITE_PERMISSION = 786;
+    private final SampleAlarmReceiver alarm = new SampleAlarmReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnAutoUpdate = findViewById(R.id.btn_auto_update);
-        btnAutoUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
 
-                Toast.makeText(MainActivity.this, "Checking for Updates, Plz wait.", Toast.LENGTH_SHORT).show();
-                //<--------------------- From SERVER JSON ------------------->
-
-//                Upload an JSON File which contains the 4 basic things,
-//                1.  latestVersion
-//                2.  latestVersionCode
-//                3.  URL(of apk) ==> http://techndevs.us/clients/ashfaq/AutoUpdater/AppUpdater.apk
-//                4.  releaseNotes ==> Which will show on dialog
-
-                new AppUpdater(MainActivity.this)
-                        .setUpdateFrom(UpdateFrom.JSON).showEvery(2)
-                        .setUpdateJSON("http://techndevs.us/clients/ashfaq/AutoUpdater/update_changelog_json.js")
-                        .showAppUpdated(true)
-                        .setCancelable(false)
-                        .start();
-
-//                <--------------------- From GITHUB ------------------->
-//                new AppUpdater(MainActivity.this).
-//                        setUpdateFrom(UpdateFrom.GITHUB).
-//                        showAppUpdated(true)
-//                        .setGitHubUserAndRepo("muhammadashfaq", "AutoUpdate").
-//                        start();
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Log.d("Resulted", "Permission is not granted.");
+            } else {
+                Log.d("Resulted", "Requesting for Permission.");
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_WRITE_PERMISSION);
             }
-        });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
+        } else {
+            Log.d("Resulted", "Permission is already granted.");
+        }
+        alarm.setAlarm(this);
     }
 }
