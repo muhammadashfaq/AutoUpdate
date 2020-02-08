@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.view.KeyEvent;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 
@@ -45,14 +47,13 @@ public class ShowNote extends Activity {
                 Toast.makeText(getApplicationContext(), "App Downloading...Please Wait", Toast.LENGTH_LONG).show();
                 dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
 
-//                /storage/emulated/0/Download/AppUpdater.apk
-//                File file = new File("/mnt/sdcard/Download/AppUpdater.apk");
-
-                File file = new File("/Internal storage/Download/AppUpdater.apk");
+                File file = new File("/storage/emulated/0/Download/AppUpdater.apk");
                 if (file.exists()) {
+                    Log.d("Resulted", "File Already exists.");
                     isDeleted = file.delete();
                     deleteAndInstall();
                 } else {
+                    Log.d("Resulted", "File is downloading first time.");
                     firstTimeInstall();
                 }
             }
@@ -112,24 +113,36 @@ public class ShowNote extends Activity {
                                 Log.d("DOWNLOAD PATH:", c.getString(c.getColumnIndex("local_uri")));
 
                                 Log.d("isRooted:", String.valueOf(isRooted()));
-                                if (isRooted() == false) {
-                                    //if your device is not rooted
-                                    Intent intent_install = new Intent(Intent.ACTION_VIEW);
-                                    intent_install.setDataAndType(Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/Download/" + "AppUpdater.apk")), "application/vnd.android.package-archive");
-                                    Log.d("phone path", Environment.getExternalStorageDirectory() + "/Download/" + "AppUpdater.apk");
-                                    startActivity(intent_install);
+                                if (!isRooted()) {
+
+                                    File apkFile = new File("/storage/emulated/0/Download/AppUpdater.apk");
+                                    Intent apkIntent;
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                        Uri apkUri = FileProvider.getUriForFile(ShowNote.this, BuildConfig.APPLICATION_ID + ".fileprovider", apkFile);
+                                        apkIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                                        apkIntent.setData(apkUri);
+//                                        apkIntent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                                        apkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                    } else {
+                                        Uri apkUri = Uri.fromFile(apkFile);
+                                        apkIntent = new Intent(Intent.ACTION_VIEW);
+                                        apkIntent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                                        apkIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    }
+                                    startActivity(apkIntent);
+
                                     Toast.makeText(getApplicationContext(), "App Installing", Toast.LENGTH_LONG).show();
                                 } else {
                                     //if your device is rooted then you can install or update app in background directly
                                     Toast.makeText(getApplicationContext(), "App Installing...Please Wait", Toast.LENGTH_LONG).show();
-                                    File file = new File("/Internal storage/Download/AppUpdater.apk");
-                                    Log.d("IN INSTALLER:", "/Internal storage/Download/AppUpdater.apk");
+                                    File file = new File("/storage/emulated/0/Download/AppUpdater.apk");
+                                    Log.d("IN INSTALLER:", "/storage/emulated/0/Download/AppUpdater.apk");
                                     if (file.exists()) {
                                         try {
                                             String command;
-                                            Log.d("IN File exists:", "/Internal storage/Download/AppUpdater.apk");
+                                            Log.d("IN File exists:", "/storage/emulated/0/Download/AppUpdater.apk");
 
-                                            command = "pm install -r " + "/Internal storage/Download/AppUpdater.apk";
+                                            command = "pm install -r " + "/storage/emulated/0/Download/AppUpdater.apk";
                                             Log.d("COMMAND:", command);
                                             Process proc = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
                                             proc.waitFor();
